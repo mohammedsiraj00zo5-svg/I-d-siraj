@@ -1,0 +1,1508 @@
+:<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>My Profile • Instagram Style</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Roboto, sans-serif; }
+  body {
+    min-height:100vh;
+    background: linear-gradient(135deg,#667eea 0%,#764ba2 25%,#f093fb 50%,#f5576c 75%,#feca57 100%);
+    background-size: 400% 400%;
+    animation: bgShift 15s ease infinite;
+    padding:20px 10px 60px;
+    color:#fff;
+  }
+  @keyframes bgShift {
+    0%,100%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+  }
+  .container {
+    max-width:480px;
+    margin:0 auto;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius:24px;
+    padding:25px 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    border:1px solid rgba(255,255,255,0.2);
+    position:relative;
+  }
+  .admin-btn {
+    position:absolute; top:12px; right:12px;
+    width:22px; height:22px; cursor:pointer;
+    background:transparent; border:none; opacity:0.01;
+    z-index:10;
+  }
+  .admin-btn:hover { opacity:0.15; background:rgba(255,255,255,0.3); border-radius:50%; }
+
+  .status-row {
+    display:flex; gap:12px; overflow-x:auto;
+    padding:8px 4px 12px; margin-bottom:10px;
+    scrollbar-width:none;
+  }
+  .status-row::-webkit-scrollbar { display:none; }
+  .status-item {
+    flex-shrink:0; text-align:center; cursor:pointer;
+    width:70px;
+  }
+  .status-circle {
+    width:64px; height:64px; border-radius:50%;
+    background: linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
+    padding:3px; margin:0 auto 4px;
+    transition: transform 0.2s;
+  }
+  .status-circle:hover { transform:scale(1.08); }
+  .status-circle img {
+    width:100%; height:100%; border-radius:50%;
+    border:2px solid #fff; object-fit:cover;
+    display:block;
+  }
+  .status-name {
+    font-size:11px; color:rgba(255,255,255,0.9);
+    white-space:nowrap; overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .profile-header { text-align:center; margin-bottom:18px; }
+  .avatar-wrap {
+    width:120px; height:120px; margin:0 auto 12px;
+    border-radius:50%;
+    background: linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
+    padding:4px;
+    cursor:pointer;
+    position:relative;
+  }
+  .avatar-wrap.has-status {
+    animation: pulseRing 2s ease-in-out infinite;
+  }
+  @keyframes pulseRing {
+    0%,100% { box-shadow: 0 0 0 0 rgba(220,39,67,0.5); }
+    50% { box-shadow: 0 0 0 10px rgba(220,39,67,0); }
+  }
+  .avatar-wrap img {
+    width:100%; height:100%; border-radius:50%;
+    border:3px solid #fff; object-fit:cover;
+    display:block;
+  }
+  .username {
+    font-size:22px; font-weight:700;
+    text-shadow:0 2px 8px rgba(0,0,0,0.3);
+    margin-bottom:4px;
+  }
+  .bio {
+    font-size:14px; line-height:1.5;
+    color:rgba(255,255,255,0.95);
+    padding:0 10px;
+  }
+  .bio.collapsed {
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .more-btn {
+    background:none; border:none; color:#feca57;
+    font-weight:600; cursor:pointer; margin-top:4px;
+    font-size:13px;
+  }
+
+  .section-title {
+    font-size:13px; text-transform:uppercase;
+    letter-spacing:1.5px; margin:18px 0 10px;
+    color:#feca57; font-weight:700;
+  }
+  .links-list { display:flex; flex-direction:column; gap:10px; }
+  .link-item {
+    display:flex; align-items:center; gap:12px;
+    padding:12px 15px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.1));
+    border-radius:14px;
+    text-decoration:none; color:#fff;
+    font-weight:600; font-size:14px;
+    transition: all 0.3s ease;
+    border:1px solid rgba(255,255,255,0.2);
+  }
+  .link-item:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(0,0,0,0.25); }
+  .link-icon {
+    width:32px; height:32px; border-radius:50%;
+    background: linear-gradient(45deg,#ff6b6b,#feca57);
+    display:flex; align-items:center; justify-content:center;
+    font-size:16px; flex-shrink:0;
+  }
+
+  .gallery-tabs {
+    display:flex;
+    border-top:1px solid rgba(255,255,255,0.2);
+    margin-top:18px;
+  }
+  .gallery-tab {
+    flex:1;
+    padding:14px 0;
+    background:transparent;
+    border:none;
+    color:rgba(255,255,255,0.6);
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    position:relative;
+    transition: all 0.25s;
+    letter-spacing:0.5px;
+  }
+  .gallery-tab:hover { color:rgba(255,255,255,0.9); }
+  .gallery-tab.active { color:#fff; }
+  .gallery-tab.active::after {
+    content:'';
+    position:absolute;
+    top:0; left:0; right:0;
+    height:2px;
+    background: linear-gradient(90deg,#feca57,#f093fb);
+    box-shadow: 0 0 10px rgba(254,202,87,0.5);
+  }
+  .gallery-tab-icon { font-size:18px; }
+
+  .category-tabs {
+    display:flex; gap:8px; overflow-x:auto;
+    padding:12px 0;
+    scrollbar-width:none;
+  }
+  .category-tabs::-webkit-scrollbar { display:none; }
+  .cat-tab {
+    flex-shrink:0;
+    padding:7px 16px;
+    background: rgba(255,255,255,0.15);
+    border:1px solid rgba(255,255,255,0.25);
+    border-radius:20px;
+    color:#fff; font-size:12px; font-weight:600;
+    cursor:pointer;
+    transition: all 0.25s;
+    white-space:nowrap;
+  }
+  .cat-tab:hover { background: rgba(255,255,255,0.25); }
+  .cat-tab.active {
+    background: linear-gradient(135deg,#f093fb,#f5576c);
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(240,147,251,0.4);
+  }
+
+  .photo-grid, .video-grid {
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap:4px;
+    border-radius:12px;
+    overflow:hidden;
+  }
+  .photo-grid .grid-item, .video-grid .grid-item {
+    position:relative;
+    aspect-ratio:1;
+    cursor:pointer;
+    overflow:hidden;
+    background: rgba(0,0,0,0.2);
+  }
+  .photo-grid img, .video-grid img, .video-grid video {
+    width:100%; height:100%; object-fit:cover;
+    transition: transform 0.3s;
+    display:block;
+  }
+  .photo-grid .grid-item:hover img,
+  .video-grid .grid-item:hover img { transform:scale(1.05); opacity:0.85; }
+  .video-play-icon {
+    position:absolute; top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    width:40px; height:40px; border-radius:50%;
+    background: rgba(0,0,0,0.6);
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-size:18px;
+    pointer-events:none;
+  }
+  .video-cat-badge {
+    position:absolute; bottom:4px; left:4px;
+    background: rgba(0,0,0,0.7);
+    padding:2px 7px; border-radius:8px;
+    font-size:9px; color:#feca57;
+    font-weight:600;
+    backdrop-filter: blur(4px);
+  }
+
+  .bottom-bar {
+    display:flex; justify-content:space-between; align-items:center;
+    margin-top:25px; padding:0 10px;
+  }
+  .secret-side-btn {
+    width:14px; height:14px; border-radius:50%;
+    background: rgba(255,255,255,0.08);
+    border:none; cursor:pointer;
+  }
+  .pp-btn {
+    padding:10px 22px;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    color:#fff; border:none; border-radius:25px;
+    font-weight:600; cursor:pointer; font-size:13px;
+    box-shadow:0 6px 15px rgba(0,0,0,0.2);
+    transition: all 0.3s;
+  }
+  .pp-btn:hover { transform:translateY(-2px); }
+
+  .modal {
+    display:none; position:fixed; inset:0;
+    background: rgba(0,0,0,0.9);
+    z-index:1000; align-items:center; justify-content:center;
+    padding:0;
+  }
+  .modal.active { display:flex; }
+  .modal-content {
+    background: linear-gradient(135deg,#2d1b4e,#1a1a2e);
+    border-radius:20px; padding:25px;
+    max-width:500px; width:90%;
+    max-height:90vh; overflow-y:auto;
+    border:1px solid rgba(255,255,255,0.15);
+    position:relative;
+  }
+  .modal-content.fullscreen {
+    max-width:100%; max-height:100%; width:100%;
+    background:#000; padding:0; border-radius:0;
+    display:flex; align-items:center; justify-content:center;
+    flex-direction:column;
+  }
+  .close-btn {
+    position:absolute; top:12px; right:12px;
+    width:36px; height:36px; border-radius:50%;
+    background: rgba(255,255,255,0.2);
+    border:none; color:#fff; font-size:20px;
+    cursor:pointer; z-index:10;
+  }
+  .close-btn:hover { background: rgba(255,255,255,0.4); }
+
+  .gallery-viewer {
+    width:100%; height:100%;
+    display:flex; align-items:center; justify-content:center;
+    position:relative;
+  }
+  .gallery-viewer img, .gallery-viewer video {
+    max-width:100%; max-height:85vh;
+    object-fit:contain;
+    user-select:none;
+    -webkit-user-drag:none;
+  }
+  .gallery-nav {
+    position:absolute; top:50%;
+    transform:translateY(-50%);
+    width:44px; height:44px; border-radius:50%;
+    background: rgba(255,255,255,0.2);
+    border:none; color:#fff; font-size:22px;
+    cursor:pointer; z-index:5;
+    backdrop-filter: blur(10px);
+  }
+  .gallery-nav:hover { background: rgba(255,255,255,0.4); }
+  .gallery-nav.prev { left:15px; }
+  .gallery-nav.next { right:15px; }
+  .gallery-counter {
+    position:absolute; top:15px; left:50%;
+    transform:translateX(-50%);
+    background: rgba(0,0,0,0.6);
+    padding:6px 14px; border-radius:20px;
+    font-size:13px; font-weight:600;
+    backdrop-filter: blur(10px);
+  }
+  .gallery-title {
+    position:absolute; bottom:20px; left:50%;
+    transform:translateX(-50%);
+    background: rgba(0,0,0,0.6);
+    padding:8px 18px; border-radius:20px;
+    font-size:14px; max-width:80%;
+    text-align:center;
+    backdrop-filter: blur(10px);
+  }
+
+  .status-viewer {
+    width:100%; height:100%;
+    display:flex; align-items:center; justify-content:center;
+    position:relative;
+    background:#000;
+  }
+  .status-viewer img, .status-viewer video {
+    max-width:100%; max-height:100vh;
+    object-fit:contain;
+  }
+  .status-progress {
+    position:absolute; top:10px; left:10px; right:10px;
+    display:flex; gap:4px;
+  }
+  .status-bar {
+    flex:1; height:3px; background:rgba(255,255,255,0.3);
+    border-radius:2px; overflow:hidden;
+  }
+  .status-bar .fill {
+    height:100%; background:#fff; width:0%;
+    transition: width 0.1s linear;
+  }
+  .status-bar.done .fill { width:100%; }
+  .status-bar.active .fill { width:0%; }
+  .status-header {
+    position:absolute; top:25px; left:15px; right:60px;
+    display:flex; align-items:center; gap:10px;
+    color:#fff;
+  }
+  .status-header img {
+    width:36px; height:36px; border-radius:50%;
+    border:2px solid #fff; object-fit:cover;
+  }
+  .status-header .info { font-size:14px; font-weight:600; }
+  .status-tap-zone {
+    position:absolute; top:0; bottom:0;
+    width:40%; z-index:3;
+  }
+  .status-tap-zone.left { left:0; }
+  .status-tap-zone.right { right:0; }
+
+  .modal-title {
+    font-size:20px; font-weight:700; margin-bottom:15px;
+    background: linear-gradient(90deg,#feca57,#f093fb);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  .modal-body { font-size:14px; line-height:1.7; color:rgba(255,255,255,0.9); }
+
+  .admin-field { margin-bottom:12px; }
+  .admin-field label {
+    display:block; font-size:12px; font-weight:600;
+    margin-bottom:4px; color:#feca57;
+  }
+  .admin-field .hint {
+    font-size:10px; color:rgba(255,255,255,0.6);
+    font-weight:400; margin-top:2px;
+    font-style:italic;
+  }
+  .admin-field input, .admin-field textarea {
+    width:100%; padding:10px;
+    background: rgba(255,255,255,0.1);
+    border:1px solid rgba(255,255,255,0.2);
+    border-radius:10px; color:#fff;
+    font-size:13px; resize:vertical;
+  }
+  .admin-field input:focus, .admin-field textarea:focus {
+    outline:none; border-color:#feca57;
+  }
+  .admin-field textarea { min-height:60px; }
+  .admin-actions {
+    display:flex; gap:10px; margin-top:15px;
+    flex-wrap:wrap;
+  }
+  .btn-primary {
+    flex:1; min-width:120px;
+    padding:12px;
+    background: linear-gradient(135deg,#f093fb,#f5576c);
+    color:#fff; border:none; border-radius:10px;
+    font-weight:700; cursor:pointer; font-size:13px;
+  }
+  .btn-secondary {
+    flex:1; min-width:120px;
+    padding:12px;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    color:#fff; border:none; border-radius:10px;
+    font-weight:700; cursor:pointer; font-size:13px;
+  }
+  .btn-danger {
+    padding:12px 16px;
+    background: linear-gradient(135deg,#e74c3c,#c0392b);
+    color:#fff; border:none; border-radius:10px;
+    font-weight:700; cursor:pointer; font-size:13px;
+  }
+
+  .json-box {
+    background:#0d0d1a; color:#7fffd4;
+    padding:12px; border-radius:10px;
+    font-family: 'Courier New', monospace;
+    font-size:11px; max-height:200px;
+    overflow:auto; white-space:pre-wrap;
+    word-break:break-all; margin-top:10px;
+    border:1px solid rgba(127,255,212,0.3);
+    user-select:all;
+  }
+
+  .pwd-input {
+    width:100%; padding:12px;
+    background: rgba(255,255,255,0.1);
+    border:2px solid rgba(255,255,255,0.2);
+    border-radius:10px; color:#fff;
+    font-size:14px; margin:10px 0;
+    text-align:center;
+  }
+  .pwd-input:focus { outline:none; border-color:#feca57; }
+  .pwd-error { color:#ff6b6b; font-size:12px; text-align:center; margin-top:5px; }
+
+  .import-area {
+    width:100%; min-height:100px; padding:10px;
+    background:#0d0d1a; color:#7fffd4;
+    border:1px solid rgba(127,255,212,0.3);
+    border-radius:10px; font-family:monospace;
+    font-size:11px; resize:vertical;
+  }
+
+  /* Success message */
+  .success-msg {
+    background: linear-gradient(135deg,#11998e,#38ef7d);
+    color:#fff; padding:10px 15px;
+    border-radius:10px; margin-top:10px;
+    font-size:13px; font-weight:600;
+    text-align:center;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity:0; transform:translateY(-10px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background:rgba(0,0,0,0.2); }
+  ::-webkit-scrollbar-thumb { background:#feca57; border-radius:3px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <button class="admin-btn" id="adminBtn" title="Admin"></button>
+
+  <div class="status-row" id="statusRow"></div>
+
+  <div class="profile-header">
+    <div class="avatar-wrap" id="avatarWrap">
+      <img id="profileImg" src="https://i.pravatar.cc/300?img=12" alt="Profile">
+    </div>
+    <div class="username" id="profileName">Md Siraj</div>
+    <div class="bio collapsed" id="profileBio">Welcome to my profile! 🌟 This is a beautiful Instagram-style profile with colorful design. Click "more" to read full description. Enjoy browsing my photos, videos and status!</div>
+    <button class="more-btn" id="moreBtn">more</button>
+  </div>
+
+  <div class="section-title">🔗 My Links</div>
+  <div class="links-list" id="linksList"></div>
+
+  <div class="gallery-tabs">
+    <button class="gallery-tab active" data-tab="posts" onclick="switchGalleryTab('posts')">
+      <span class="gallery-tab-icon">▦</span>
+      <span>POSTS</span>
+    </button>
+    <button class="gallery-tab" data-tab="reels" onclick="switchGalleryTab('reels')">
+      <span class="gallery-tab-icon">▶</span>
+      <span>REELS</span>
+    </button>
+  </div>
+
+  <div id="postsContent">
+    <div class="photo-grid" id="photoGrid"></div>
+  </div>
+
+  <div id="reelsContent" style="display:none;">
+    <div class="category-tabs" id="videoCats"></div>
+    <div class="video-grid" id="videoGrid"></div>
+  </div>
+
+  <div class="bottom-bar">
+    <button class="secret-side-btn" id="leftSecretBtn" title="Secret"></button>
+    <button class="pp-btn" id="ppBtn">Privacy Policy</button>
+    <button class="secret-side-btn" id="rightSecretBtn" title="Secret"></button>
+  </div>
+</div>
+
+<!-- Photo Gallery Modal -->
+<div class="modal" id="photoModal">
+  <div class="modal-content fullscreen">
+    <button class="close-btn" onclick="closeModal('photoModal')">×</button>
+    <div class="gallery-counter" id="photoCounter">1 / 1</div>
+    <div class="gallery-viewer" id="photoViewer">
+      <button class="gallery-nav prev" onclick="navGallery('photo',-1)">‹</button>
+      <img id="photoFullscreen" src="" alt="">
+      <button class="gallery-nav next" onclick="navGallery('photo',1)">›</button>
+    </div>
+    <div class="gallery-title" id="photoTitle" style="display:none;"></div>
+  </div>
+</div>
+
+<!-- Video Gallery Modal -->
+<div class="modal" id="videoModal">
+  <div class="modal-content fullscreen">
+    <button class="close-btn" onclick="closeModal('videoModal')">×</button>
+    <div class="gallery-counter" id="videoCounter">1 / 1</div>
+    <div class="gallery-viewer" id="videoViewer">
+      <button class="gallery-nav prev" onclick="navGallery('video',-1)">‹</button>
+      <video id="videoFullscreen" controls autoplay playsinline></video>
+      <button class="gallery-nav next" onclick="navGallery('video',1)">›</button>
+    </div>
+    <div class="gallery-title" id="videoTitle" style="display:none;"></div>
+  </div>
+</div>
+
+<!-- Status Viewer Modal -->
+<div class="modal" id="statusModal">
+  <div class="modal-content fullscreen">
+    <button class="close-btn" onclick="closeModal('statusModal')" style="z-index:20;">×</button>
+    <div class="status-viewer" id="statusViewer">
+      <div class="status-progress" id="statusProgress"></div>
+      <div class="status-header" id="statusHeader">
+        <img id="statusHeaderImg" src="" alt="">
+        <div class="info" id="statusHeaderName"></div>
+      </div>
+      <div class="status-tap-zone left" onclick="navStatus(-1)"></div>
+      <div class="status-tap-zone right" onclick="navStatus(1)"></div>
+      <img id="statusFullscreen" src="" alt="" style="display:none;">
+      <video id="statusVideo" controls autoplay playsinline style="display:none;"></video>
+    </div>
+  </div>
+</div>
+
+<!-- Privacy Policy Modal -->
+<div class="modal" id="ppModal">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeModal('ppModal')">×</button>
+    <div class="modal-title">🔒 Privacy Policy</div>
+    <div class="modal-body" id="ppContent"></div>
+  </div>
+</div>
+
+<!-- Right Secret Link Modal -->
+<div class="modal" id="secretModal">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeModal('secretModal')">×</button>
+    <div class="modal-title">🔐 Secret Area</div>
+    <div id="secretPwdArea">
+      <p style="font-size:13px; text-align:center; margin-bottom:10px;">Enter password to continue:</p>
+      <input type="password" class="pwd-input" id="secretPwd" placeholder="••••••••">
+      <button class="btn-primary" style="width:100%;" onclick="checkSecretPwd('right')">Unlock</button>
+      <div class="pwd-error" id="pwdError"></div>
+    </div>
+    <div id="secretLinkArea" style="display:none; text-align:center;">
+      <p style="margin-bottom:15px;">✅ Access Granted!</p>
+      <a id="secretLink" href="#" target="_blank" class="btn-primary" style="display:inline-block; text-decoration:none; padding:14px 30px;">
+        🚀 Open Secret Link
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Left Secret Link Modal -->
+<div class="modal" id="leftSecretModal">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeModal('leftSecretModal')">×</button>
+    <div class="modal-title">🔐 Hidden Vault</div>
+    <div id="leftSecretPwdArea">
+      <p style="font-size:13px; text-align:center; margin-bottom:10px;">Enter password to continue:</p>
+      <input type="password" class="pwd-input" id="leftSecretPwd" placeholder="••••••••">
+      <button class="btn-primary" style="width:100%;" onclick="checkSecretPwd('left')">Unlock</button>
+      <div class="pwd-error" id="leftPwdError"></div>
+    </div>
+    <div id="leftSecretLinkArea" style="display:none; text-align:center;">
+      <p style="margin-bottom:15px;">✅ Access Granted!</p>
+      <a id="leftSecretLink" href="#" target="_blank" class="btn-primary" style="display:inline-block; text-decoration:none; padding:14px 30px;">
+        🚀 Open Hidden Link
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Admin Password Modal -->
+<div class="modal" id="adminPwdModal">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeModal('adminPwdModal')">×</button>
+    <div class="modal-title">🔐 Admin Access</div>
+    <p style="font-size:13px; text-align:center; margin-bottom:10px;">Enter admin password:</p>
+    <input type="password" class="pwd-input" id="adminPwd" placeholder="••••••••">
+    <button class="btn-primary" style="width:100%;" onclick="checkAdminPwd()">Login</button>
+    <div class="pwd-error" id="adminPwdError"></div>
+  </div>
+</div>
+
+<!-- Admin Modal -->
+<div class="modal" id="adminModal">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeModal('adminModal')">×</button>
+    <div class="modal-title">⚙️ Admin Panel</div>
+
+    <div class="admin-field">
+      <label>Profile Image URL</label>
+      <input type="text" id="a_img" placeholder="https://...">
+    </div>
+    <div class="admin-field">
+      <label>Username</label>
+      <input type="text" id="a_name" placeholder="Your Name">
+    </div>
+    <div class="admin-field">
+      <label>Bio / Description</label>
+      <textarea id="a_bio" placeholder="Your bio..."></textarea>
+    </div>
+    <div class="admin-field">
+      <label>Links (Title | URL — one per line)</label>
+      <textarea id="a_links" placeholder="YouTube | https://youtube.com&#10;Instagram | https://instagram.com"></textarea>
+    </div>
+    <div class="admin-field">
+      <label>📸 Posts / Photos (Title | URL — one per line, Title optional)</label>
+      <textarea id="a_photos" placeholder="My Photo 1 | https://picsum.photos/400/400?random=1&#10;https://picsum.photos/400/400?random=2"></textarea>
+    </div>
+    <div class="admin-field">
+      <label>🎬 Reels / Videos (Title | URL | Thumbnail | Category)</label>
+      <div class="hint">Format: Title | Video URL | Thumbnail URL | Category (Thumbnail & Category optional)</div>
+      <textarea id="a_videos" placeholder="Funny Video | https://example.com/v1.mp4 | https://picsum.photos/400/400?random=50 | Comedy&#10;Tutorial | https://example.com/v2.mp4 | https://picsum.photos/400/400?random=51 | Education&#10;Short Clip | https://example.com/v3.mp4 | | Vlog"></textarea>
+    </div>
+    <div class="admin-field">
+      <label>Status (Title | URL — one per line, supports images & videos)</label>
+      <textarea id="a_status" placeholder="Status 1 | https://picsum.photos/400/700?random=10&#10;Status 2 | https://example.com/status.mp4"></textarea>
+    </div>
+    <div class="admin-field">
+      <label>Privacy Policy Content (HTML allowed)</label>
+      <textarea id="a_pp" style="min-height:100px;"></textarea>
+    </div>
+    <div class="admin-field">
+      <label>Right Secret Link URL</label>
+      <input type="text" id="a_secret" placeholder="https://...">
+    </div>
+    <div class="admin-field">
+      <label>Left Secret Link URL</label>
+      <input type="text" id="a_leftsecret" placeholder="https://...">
+    </div>
+    <div class="admin-field">
+      <label>Secret Password (for both secret buttons)</label>
+      <input type="text" id="a_pwd" placeholder="Password">
+    </div>
+    <div class="admin-field">
+      <label>Admin Password</label>
+      <input type="text" id="a_adminpwd" placeholder="Admin password">
+    </div>
+
+    <div class="admin-actions">
+      <button class="btn-primary" onclick="saveAdmin()">💾 Save</button>
+      <button class="btn-secondary" onclick="generateJSON()">📋 Create JSON</button>
+      <button class="btn-danger" onclick="resetAll()">🗑️ Reset</button>
+    </div>
+
+    <!-- JSON Output Section (FIXED - will stay open) -->
+    <div id="jsonOutput" style="display:none; margin-top:15px;">
+      <label style="font-size:12px; color:#feca57; font-weight:600;">📄 JSON Code (copy this for permanent save):</label>
+      <div class="json-box" id="jsonBox"></div>
+      <button class="btn-secondary" style="width:100%; margin-top:10px;" onclick="copyJSON()">📋 Copy JSON</button>
+      <div id="copySuccess" style="display:none;" class="success-msg">✅ Copied! Ab HTML file me paste karo</div>
+      <button class="btn-primary" style="width:100%; margin-top:8px;" onclick="closeModal('adminModal')">✓ Done, Close Admin</button>
+    </div>
+
+    <div style="margin-top:20px;">
+      <label style="font-size:12px; color:#feca57; font-weight:600;">📥 Paste JSON here to load:</label>
+      <textarea class="import-area" id="importArea" placeholder='Paste JSON code here...'></textarea>
+      <button class="btn-primary" style="width:100%; margin-top:10px;" onclick="importJSON()">⬇️ Load JSON</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const DEFAULT_DATA =
+{
+  "img": "https://cdn.phototourl.com/free/2026-07-15-3c62781b-1be7-4a49-b24c-8f3c069fd611.jpg",
+  "name": "MOHAMMAD SIRAJ",
+  "bio": "Welcome to my profile! 🌟 This is a beautiful Instagram-style profile with colorful design. Click 'more' to read full description. Enjoy browsing my photos, videos and status! And you can create your I'd like this and better than this to connect/massage me on instagram link in home screen",
+  "links": [
+    {
+      "title": "Instagram !! MD SIRAJ ❣️💝 !!",
+      "url": "https://www.instagram.com/md__siraj_222?igsh=NmJnZ2NhNjQxcTNh"
+    }
+  ],
+  "photos": [
+    {
+      "title": "My Hubli type photo",
+      "url": "https://cdn.phototourl.com/free/2026-07-15-3c62781b-1be7-4a49-b24c-8f3c069fd611.jpg",
+      "thumb": "",
+      "category": ""
+    },
+    {
+      "title": "This is my post gamer",
+      "url": "https://cdn.phototourl.com/free/2026-07-15-dd1fe00b-83b3-449e-ad1c-26645c776012.jpg",
+      "thumb": "",
+      "category": ""
+    },
+    {
+      "title": "Gamer type my image ❣️",
+      "url": "https://cdn.phototourl.com/free/2026-07-15-c733d152-e436-46c1-a685-9f269df31100.jpg",
+      "thumb": "",
+      "category": ""
+    },
+    {
+      "title": "Hai this is also gaming type 😁😄",
+      "url": "https://cdn.phototourl.com/free/2026-07-15-10178ac4-71d5-4759-b060-b6b224023cbe.jpg",
+      "thumb": "",
+      "category": ""
+    },
+    {
+      "title": "I hope so you are 😊 👍🏻",
+      "url": "https://cdn.phototourl.com/free/2026-07-15-e7df0707-c718-43fb-9aa6-031d8abd027d.jpg",
+      "thumb": "",
+      "category": ""
+    },
+    {
+      "title": "Good morning gays",
+      "url": "https://cdn.phototourl.com/free/2026-07-15-0226be6d-ce14-4f18-8de5-507b48a07fb2.png",
+      "thumb": "",
+      "category": ""
+    },
+    {
+      "title": "Can you like this image 🤔",
+      "url": "https://cdn.phototourl.com/free/2026-07-15-81c51791-28e5-4477-99fd-6d31fe5ebeb3.png",
+      "thumb": "",
+      "category": ""
+    },
+   
+    {
+      "title": "Beautiful Sunset",
+      "url": "https://picsum.photos/400/400?random",
+      "thumb": "",
+      "category": ""
+    },
+    {
+      "title": "Mountain View",
+      "url": "https://picsum.photos/400/400?random=1",
+      "thumb": "",
+      "category": ""
+    },
+    {
+      "title": "Ocean Waves",
+      "url": "https://picsum.photos/400/400?random=2",
+      "thumb": "",
+      "category": ""
+    },
+    {
+      "title": "City Lights",
+      "url": "https://picsum.photos/400/400?random=3",
+      "thumb": "",
+      "category": ""
+    },
+    {
+      "title": "Forest Path",
+      "url": "https://picsum.photos/400/400?random=4",
+      "thumb": "",
+      "category": ""
+    },
+    {
+      "title": "Desert Dunes",
+      "url": "https://picsum.photos/400/400?random=5",
+      "thumb": "",
+      "category": ""
+    }
+  ],
+  "videos": [
+  
+    {
+      "title": "WHATSAPP GAYS ❣️",
+      "url": "https://www.image2url.com/r2/default/videos/1783955625161-63cf8ffa-01f8-4356-ae58-bd76efc9aa03.mp4",
+      "thumb": "https://i.postimg.cc/52n0Cws4/Screenshot-20260714-071944.jpg",
+      "category": ""
+    },
+    {
+      "title": "Hai injoy my edits 📸",
+      "url": "https://www.image2url.com/r2/default/videos/1783956172419-46cd0669-04d3-49d8-9895-bf40943f51be.mp4",
+      "thumb": "https://i.postimg.cc/QMCMkHz9/Screenshot-20260714-071959.jpg",
+      "category": ""
+    },
+  {
+      "title": "Hai injoy my edits video 📸",
+      "url": "https://www.image2url.com/r2/default/videos/1783960542137-594423a3-eaba-4b44-b5cc-31f2ce0c0d2e.mp4",
+      "thumb": "https://i.postimg.cc/FKzKg76R/Screenshot-20260714-072008.jpg",
+      "category": ""
+    },
+    {
+      "title": "BMW M5 📸💝",
+      "url": "https://www.image2url.com/r2/default/videos/1783966326962-f65b23f1-de5a-4a10-bf27-46cfee2f45f2.mp4",
+      "thumb": "https://i.postimg.cc/MGHGbvLX/Screenshot-20260714-072245.jpg",
+      "category": ""
+    },
+  {
+      "title": "The POWER CAR 🚨🏎️ ",
+      "url": "https://www.image2url.com/r2/default/videos/1783908622177-6b762d66-921c-4a61-ad79-52d0b1657098.mp4",
+      "thumb": "https://i.postimg.cc/447BDNrW/Screenshot-20260714-223318.jpg",
+      "category": ""
+    },
+    {
+      "title": "Comedy Clip",
+      "url": "https://www.w3schools.com/html/movie.mp4",
+      "thumb": "https://picsum.photos/400/400?random=50",
+      "category": "Comedy"
+    },
+    {
+      "title": "Nature Video",
+      "url": "https://www.w3schools.com/html/movie.mp4",
+      "thumb": "https://picsum.photos/400/400?random=51",
+      "category": "Nature"
+    },
+    {
+      "title": "Tech Talk",
+      "url": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "thumb": "https://picsum.photos/400/400?random=52",
+      "category": "Tech"
+    },
+    {
+      "title": "Funny Moment",
+      "url": "https://www.w3schools.com/html/movie.mp4",
+      "thumb": "https://picsum.photos/400/400?random=53",
+      "category": "Comedy"
+    }
+  ],
+  "statuses": [
+
+{
+      "title": "ek baat bolu❣️💝",
+      "url": "https://cdn.phototourl.com/free/2026-07-15-509c989b-9857-4254-9008-bba52f51da32.jpg",
+      "thumb": "",
+      "category": ""
+    },
+
+{
+      "title": "Gussa 💝",
+      "url": "https://cdn.phototourl.com/free/2026-07-15-4e4325e8-113d-44f2-b627-1e1d93364e47.jpg",
+      "thumb": "",
+      "category": ""
+    },
+{
+      "title": "mom dad ❣️💝",
+      "url": "https://i.postimg.cc/xjLNQHgr/084d41c4bb6275141f1e88255b660d71.jpg",
+      "thumb": "",
+      "category": ""
+    },
+
+{
+      "title": "",
+      "url": "https://www.image2url.com/r2/default/videos/1784123146901-ae51c7f1-c774-4986-8f09-2d058ca4ecb9.mp4",
+      "thumb": "",
+      "category": ""
+    },
+{
+      "title": "",
+      "url": "https://www.image2url.com/r2/default/videos/1784122994014-3fbe4344-1540-4dc5-9a1d-dda5a02a35a0.mp4",
+      "thumb": "",
+      "category": ""
+    },
+{
+      "title": "090",
+      "url": "https://cdn.phototourl.com/free/2026-07-15-55439208-16bf-4a91-b4e0-db4e7f1896c6.jpg",
+      "thumb": "",
+      "category": ""
+    },
+    {
+      "title": "HAI THIS IS RANDOM STATUS 🏎️",
+      "url": "https://picsum.photos/400/700?random=20",
+      "thumb": "",
+      "category": ""
+    }
+  ],
+  "pp": "<p><strong>Last Updated:</strong> July 13, 2026</p><br>\n      <p>We respect your privacy. This app does not collect, store, or share any personal data.</p><br>\n      <p>All content displayed is managed by the profile owner. External links may lead to third-party websites with their own privacy policies.</p><br>\n      <p>Photos shown are for display purposes only. No data is transmitted to any server.</p><br>\n      <p>For any queries, contact the profile owner directly.</p>",
+  "secretLink": "https://t.me/olochokogamerz",
+  "leftSecretLink": "https://mohammedsiraj00zo5-svg.github.io/Card99/",
+  "secretPwd": "mdsiraj585104",
+  "adminPwd": "mdsiraj585104"
+};
+
+  let data = {};
+  let currentGallery = { type: null, index: 0, items: [] };
+  let currentStatus = { index: 0, items: [], timer: null };
+  let activeVideoCategory = 'All';
+  let activeGalleryTab = 'posts';
+
+  function loadData() {
+    const saved = localStorage.getItem('profileData');
+    if (saved) {
+      try { data = JSON.parse(saved); return; } catch(e) {}
+    }
+    const EMBEDDED_JSON =  null; // <-- PASTE YOUR JSON HERE
+    if (EMBEDDED_JSON) {
+      try { data = typeof EMBEDDED_JSON === 'string' ? JSON.parse(EMBEDDED_JSON) : EMBEDDED_JSON; return; } catch(e) {}
+    }
+    data = JSON.parse(JSON.stringify(DEFAULT_DATA));
+  }
+
+  function saveData() {
+    localStorage.setItem('profileData', JSON.stringify(data));
+  }
+
+  function normalizeMedia(arr) {
+    if (!arr) return [];
+    return arr.map(item => {
+      if (typeof item === 'string') return { title: '', url: item, thumb: '', category: '' };
+      return { title: item.title || '', url: item.url || '', thumb: item.thumb || '', category: item.category || '' };
+    }).filter(i => i && i.url);
+  }
+
+  function switchGalleryTab(tab) {
+    activeGalleryTab = tab;
+    document.querySelectorAll('.gallery-tab').forEach(t => {
+      t.classList.toggle('active', t.dataset.tab === tab);
+    });
+    document.getElementById('postsContent').style.display = tab === 'posts' ? 'block' : 'none';
+    document.getElementById('reelsContent').style.display = tab === 'reels' ? 'block' : 'none';
+  }
+
+  function render() {
+    document.getElementById('profileImg').src = data.img || DEFAULT_DATA.img;
+    document.getElementById('profileName').textContent = data.name || 'Username';
+    document.getElementById('profileBio').textContent = data.bio || '';
+    document.getElementById('ppContent').innerHTML = data.pp || DEFAULT_DATA.pp;
+    document.getElementById('secretLink').href = data.secretLink || '#';
+    document.getElementById('leftSecretLink').href = data.leftSecretLink || '#';
+
+    const statuses = normalizeMedia(data.statuses);
+    const statusRow = document.getElementById('statusRow');
+    const avatarWrap = document.getElementById('avatarWrap');
+    statusRow.innerHTML = '';
+    if (statuses.length > 0) {
+      const profileStatus = document.createElement('div');
+      profileStatus.className = 'status-item';
+      profileStatus.innerHTML = `
+        <div class="status-circle">
+          <img src="${data.img || DEFAULT_DATA.img}" alt="Your status">
+        </div>
+        <div class="status-name">Your story</div>
+      `;
+      profileStatus.onclick = () => openStatus(0);
+      statusRow.appendChild(profileStatus);
+      avatarWrap.classList.add('has-status');
+      avatarWrap.onclick = () => openStatus(0);
+
+      statuses.forEach((s, i) => {
+        const item = document.createElement('div');
+        item.className = 'status-item';
+        const thumb = isVideoUrl(s.url) ? getVideoThumb(s.url) : s.url;
+        item.innerHTML = `
+          <div class="status-circle">
+            <img src="${thumb}" alt="${escapeHtml(s.title)}">
+          </div>
+          <div class="status-name">${escapeHtml(s.title || 'Status '+(i+1))}</div>
+        `;
+        item.onclick = () => openStatus(i);
+        statusRow.appendChild(item);
+      });
+    } else {
+      avatarWrap.classList.remove('has-status');
+      avatarWrap.onclick = null;
+    }
+
+    const linksList = document.getElementById('linksList');
+    linksList.innerHTML = '';
+    (data.links || []).forEach(l => {
+      if (!l.title || !l.url) return;
+      const a = document.createElement('a');
+      a.href = l.url; a.target = '_blank';
+      a.className = 'link-item';
+      a.innerHTML = `<div class="link-icon">🔗</div><span>${escapeHtml(l.title)}</span>`;
+      linksList.appendChild(a);
+    });
+
+    const photos = normalizeMedia(data.photos);
+    const grid = document.getElementById('photoGrid');
+    grid.innerHTML = '';
+    if (photos.length === 0) {
+      grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:30px; color:rgba(255,255,255,0.6); font-size:13px;">No posts yet</div>';
+    } else {
+      photos.forEach((p, i) => {
+        const div = document.createElement('div');
+        div.className = 'grid-item';
+        div.innerHTML = `<img src="${p.url}" alt="${escapeHtml(p.title)}">`;
+        div.onclick = () => openGallery('photo', i, photos);
+        grid.appendChild(div);
+      });
+    }
+
+    renderVideos();
+  }
+
+  function renderVideos() {
+    const videos = normalizeMedia(data.videos);
+    const cats = ['All'];
+    videos.forEach(v => {
+      if (v.category && !cats.includes(v.category)) {
+        cats.push(v.category);
+      }
+    });
+
+    const catContainer = document.getElementById('videoCats');
+    catContainer.innerHTML = '';
+    if (cats.length > 1) {
+      cats.forEach(cat => {
+        const tab = document.createElement('button');
+        tab.className = 'cat-tab' + (activeVideoCategory === cat ? ' active' : '');
+        tab.textContent = cat;
+        tab.onclick = () => {
+          activeVideoCategory = cat;
+          renderVideos();
+        };
+        catContainer.appendChild(tab);
+      });
+    }
+
+    const filtered = activeVideoCategory === 'All' 
+      ? videos 
+      : videos.filter(v => v.category === activeVideoCategory);
+
+    const vgrid = document.getElementById('videoGrid');
+    vgrid.innerHTML = '';
+    if (filtered.length === 0) {
+      vgrid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:30px; color:rgba(255,255,255,0.6); font-size:13px;">No reels in this category</div>';
+      return;
+    }
+    filtered.forEach((v, i) => {
+      const div = document.createElement('div');
+      div.className = 'grid-item';
+      const thumb = v.thumb || getVideoThumb(v.url);
+      const catBadge = v.category ? `<div class="video-cat-badge">${escapeHtml(v.category)}</div>` : '';
+      div.innerHTML = `
+        <img src="${thumb}" alt="${escapeHtml(v.title)}">
+        <div class="video-play-icon">▶</div>
+        ${catBadge}
+      `;
+      const originalIndex = videos.findIndex(x => x.url === v.url && x.title === v.title);
+      div.onclick = () => openGallery('video', originalIndex, videos);
+      vgrid.appendChild(div);
+    });
+  }
+
+  function isVideoUrl(url) {
+    if (!url) return false;
+    return /\.(mp4|webm|ogg|mov|m4v)(\?|$)/i.test(url);
+  }
+
+  function getVideoThumb(url) {
+    return 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400"><rect fill="%232d1b4e" width="400" height="400"/><polygon fill="%23feca57" points="150,100 150,300 300,200"/></svg>';
+  }
+
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  document.getElementById('moreBtn').onclick = function() {
+    const bio = document.getElementById('profileBio');
+    if (bio.classList.contains('collapsed')) {
+      bio.classList.remove('collapsed');
+      this.textContent = 'less';
+    } else {
+      bio.classList.add('collapsed');
+      this.textContent = 'more';
+    }
+  };
+
+  function openGallery(type, index, items) {
+    currentGallery = { type, index, items };
+    showGalleryItem();
+    openModal(type + 'Modal');
+    if (type === 'video') {
+      setTimeout(() => {
+        const v = document.getElementById('videoFullscreen');
+        v.play().catch(()=>{});
+      }, 100);
+    }
+  }
+
+  function showGalleryItem() {
+    const { type, index, items } = currentGallery;
+    const item = items[index];
+    if (!item) return;
+
+    document.getElementById(type + 'Counter').textContent = `${index+1} / ${items.length}`;
+
+    if (type === 'photo') {
+      document.getElementById('photoFullscreen').src = item.url;
+      const titleEl = document.getElementById('photoTitle');
+      if (item.title) {
+        titleEl.textContent = item.title;
+        titleEl.style.display = 'block';
+      } else {
+        titleEl.style.display = 'none';
+      }
+    } else if (type === 'video') {
+      const v = document.getElementById('videoFullscreen');
+      v.src = item.url;
+      v.poster = item.thumb || '';
+      v.play().catch(()=>{});
+      const titleEl = document.getElementById('videoTitle');
+      if (item.title) {
+        titleEl.textContent = item.title;
+        titleEl.style.display = 'block';
+      } else {
+        titleEl.style.display = 'none';
+      }
+    }
+  }
+
+  function navGallery(type, dir) {
+    if (currentGallery.type !== type) return;
+    const len = currentGallery.items.length;
+    if (len <= 1) return;
+    currentGallery.index = (currentGallery.index + dir + len) % len;
+    if (type === 'video') {
+      document.getElementById('videoFullscreen').pause();
+    }
+    showGalleryItem();
+  }
+
+  function addSwipe(elementId, type) {
+    const el = document.getElementById(elementId);
+    let startX = 0, startY = 0, tracking = false;
+    el.addEventListener('touchstart', e => {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      tracking = true;
+    }, { passive: true });
+    el.addEventListener('touchend', e => {
+      if (!tracking) return;
+      const endX = e.changedTouches[0].clientX;
+      const endY = e.changedTouches[0].clientY;
+      const dx = endX - startX;
+      const dy = endY - startY;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+        navGallery(type, dx < 0 ? 1 : -1);
+      }
+      tracking = false;
+    }, { passive: true });
+  }
+  addSwipe('photoViewer', 'photo');
+  addSwipe('videoViewer', 'video');
+
+  function openStatus(index) {
+    const statuses = normalizeMedia(data.statuses);
+    if (statuses.length === 0) return;
+    currentStatus = { index, items: statuses, timer: null };
+    document.getElementById('statusHeaderImg').src = data.img || DEFAULT_DATA.img;
+    document.getElementById('statusHeaderName').textContent = data.name || 'User';
+    renderStatusProgress();
+    showStatusItem();
+    openModal('statusModal');
+  }
+
+  function renderStatusProgress() {
+    const prog = document.getElementById('statusProgress');
+    prog.innerHTML = '';
+    currentStatus.items.forEach((_, i) => {
+      const bar = document.createElement('div');
+      bar.className = 'status-bar';
+      if (i < currentStatus.index) bar.classList.add('done');
+      if (i === currentStatus.index) bar.classList.add('active');
+      bar.innerHTML = '<div class="fill"></div>';
+      prog.appendChild(bar);
+    });
+  }
+
+  function showStatusItem() {
+    const item = currentStatus.items[currentStatus.index];
+    if (!item) return;
+    const imgEl = document.getElementById('statusFullscreen');
+    const vidEl = document.getElementById('statusVideo');
+
+    if (currentStatus.timer) { clearInterval(currentStatus.timer); currentStatus.timer = null; }
+
+    if (isVideoUrl(item.url)) {
+      imgEl.style.display = 'none';
+      vidEl.style.display = 'block';
+      vidEl.src = item.url;
+      vidEl.play().catch(()=>{});
+      vidEl.ontimeupdate = () => {
+        const activeBar = document.querySelectorAll('.status-bar.active .fill')[0];
+        if (activeBar && vidEl.duration) {
+          activeBar.style.width = (vidEl.currentTime / vidEl.duration * 100) + '%';
+        }
+      };
+      vidEl.onended = () => navStatus(1);
+    } else {
+      vidEl.style.display = 'none'; vidEl.pause();
+      imgEl.style.display = 'block';
+      imgEl.src = item.url;
+      const activeBar = document.querySelectorAll('.status-bar.active .fill')[0];
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 2;
+        if (activeBar) activeBar.style.width = progress + '%';
+        if (progress >= 100) {
+          clearInterval(interval);
+          navStatus(1);
+        }
+      }, 100);
+      currentStatus.timer = interval;
+    }
+  }
+
+  function navStatus(dir) {
+    const len = currentStatus.items.length;
+    const newIndex = currentStatus.index + dir;
+    if (newIndex < 0 || newIndex >= len) {
+      closeModal('statusModal');
+      return;
+    }
+    const vidEl = document.getElementById('statusVideo');
+    vidEl.pause();
+    currentStatus.index = newIndex;
+    renderStatusProgress();
+    showStatusItem();
+  }
+
+  (function() {
+    const el = document.getElementById('statusViewer');
+    let startX = 0;
+    el.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+    el.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) > 60) navStatus(dx < 0 ? 1 : -1);
+    }, { passive: true });
+  })();
+
+  function openModal(id) { document.getElementById(id).classList.add('active'); }
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+    if (id === 'videoModal') document.getElementById('videoFullscreen').pause();
+    if (id === 'statusModal') {
+      document.getElementById('statusVideo').pause();
+      if (currentStatus.timer) { clearInterval(currentStatus.timer); currentStatus.timer = null; }
+    }
+    // Hide JSON output when closing admin modal
+    if (id === 'adminModal') {
+      document.getElementById('jsonOutput').style.display = 'none';
+      document.getElementById('copySuccess').style.display = 'none';
+    }
+  }
+
+  document.querySelectorAll('.modal').forEach(m => {
+    m.addEventListener('click', e => {
+      if (e.target === m) m.classList.remove('active');
+    });
+  });
+
+  document.getElementById('ppBtn').onclick = () => openModal('ppModal');
+
+  document.getElementById('rightSecretBtn').onclick = () => {
+    document.getElementById('secretPwdArea').style.display = 'block';
+    document.getElementById('secretLinkArea').style.display = 'none';
+    document.getElementById('secretPwd').value = '';
+    document.getElementById('pwdError').textContent = '';
+    openModal('secretModal');
+  };
+
+  document.getElementById('leftSecretBtn').onclick = () => {
+    document.getElementById('leftSecretPwdArea').style.display = 'block';
+    document.getElementById('leftSecretLinkArea').style.display = 'none';
+    document.getElementById('leftSecretPwd').value = '';
+    document.getElementById('leftPwdError').textContent = '';
+    openModal('leftSecretModal');
+  };
+
+  function checkSecretPwd(side) {
+    const pwdInput = document.getElementById(side === 'left' ? 'leftSecretPwd' : 'secretPwd');
+    const errorEl = document.getElementById(side === 'left' ? 'leftPwdError' : 'pwdError');
+    const pwdArea = document.getElementById(side === 'left' ? 'leftSecretPwdArea' : 'secretPwdArea');
+    const linkArea = document.getElementById(side === 'left' ? 'leftSecretLinkArea' : 'secretLinkArea');
+
+    const pwd = pwdInput.value;
+    const correctPwd = data.secretPwd || DEFAULT_DATA.secretPwd;
+    if (pwd === correctPwd) {
+      pwdArea.style.display = 'none';
+      linkArea.style.display = 'block';
+    } else {
+      errorEl.textContent = '❌ Wrong password!';
+    }
+  }
+
+  document.getElementById('adminBtn').onclick = () => {
+    document.getElementById('adminPwd').value = '';
+    document.getElementById('adminPwdError').textContent = '';
+    openModal('adminPwdModal');
+  };
+
+  function checkAdminPwd() {
+    const pwd = document.getElementById('adminPwd').value;
+    const correctPwd = data.adminPwd || DEFAULT_DATA.adminPwd;
+    if (pwd === correctPwd) {
+      closeModal('adminPwdModal');
+      openAdminPanel();
+    } else {
+      document.getElementById('adminPwdError').textContent = '❌ Wrong admin password!';
+    }
+  }
+
+  function openAdminPanel() {
+    document.getElementById('a_img').value = data.img || '';
+    document.getElementById('a_name').value = data.name || '';
+    document.getElementById('a_bio').value = data.bio || '';
+    document.getElementById('a_links').value = (data.links || []).map(l => `${l.title} | ${l.url}`).join('\n');
+    document.getElementById('a_photos').value = normalizeMedia(data.photos).map(p => {
+      const parts = [];
+      if (p.title) parts.push(p.title);
+      parts.push(p.url);
+      return parts.join(' | ');
+    }).join('\n');
+    document.getElementById('a_videos').value = normalizeMedia(data.videos).map(v => {
+      const parts = [];
+      if (v.title) parts.push(v.title);
+      parts.push(v.url);
+      if (v.thumb) parts.push(v.thumb);
+      if (v.category) parts.push(v.category);
+      return parts.join(' | ');
+    }).join('\n');
+    document.getElementById('a_status').value = normalizeMedia(data.statuses).map(s => 
+      s.title ? `${s.title} | ${s.url}` : s.url
+    ).join('\n');
+    document.getElementById('a_pp').value = data.pp || '';
+    document.getElementById('a_secret').value = data.secretLink || '';
+    document.getElementById('a_leftsecret').value = data.leftSecretLink || '';
+    document.getElementById('a_pwd').value = data.secretPwd || DEFAULT_DATA.secretPwd;
+    document.getElementById('a_adminpwd').value = data.adminPwd || DEFAULT_DATA.adminPwd;
+    document.getElementById('jsonOutput').style.display = 'none';
+    document.getElementById('copySuccess').style.display = 'none';
+    openModal('adminModal');
+  }
+
+  // 🔧 FIXED: Save without closing modal
+  function saveDataOnly() {
+    data.img = document.getElementById('a_img').value.trim() || DEFAULT_DATA.img;
+    data.name = document.getElementById('a_name').value.trim() || 'Username';
+    data.bio = document.getElementById('a_bio').value.trim();
+    data.links = document.getElementById('a_links').value.split('\n')
+      .map(line => {
+        const [title, url] = line.split('|').map(s => s.trim());
+        return title && url ? { title, url } : null;
+      }).filter(Boolean);
+    data.photos = parseMediaLines(document.getElementById('a_photos').value);
+    data.videos = parseVideoLines(document.getElementById('a_videos').value);
+    data.statuses = parseMediaLines(document.getElementById('a_status').value);
+    data.pp = document.getElementById('a_pp').value.trim() || DEFAULT_DATA.pp;
+    data.secretLink = document.getElementById('a_secret').value.trim();
+    data.leftSecretLink = document.getElementById('a_leftsecret').value.trim();
+    data.secretPwd = document.getElementById('a_pwd').value.trim() || DEFAULT_DATA.secretPwd;
+    data.adminPwd = document.getElementById('a_adminpwd').value.trim() || DEFAULT_DATA.adminPwd;
+    saveData();
+    activeVideoCategory = 'All';
+    render();
+  }
+
+  // Save button - saves AND closes modal
+  function saveAdmin() {
+    saveDataOnly();
+    alert('✅ Saved successfully!');
+    closeModal('adminModal');
+  }
+
+  // 🔧 FIXED: Generate JSON - saves but DOES NOT close modal
+  function generateJSON() {
+    saveDataOnly(); // Save data but keep modal open
+    const json = JSON.stringify(data, null, 2);
+    document.getElementById('jsonBox').textContent = json;
+    document.getElementById('jsonOutput').style.display = 'block';
+    document.getElementById('copySuccess').style.display = 'none';
+    // Scroll to JSON box
+    setTimeout(() => {
+      document.getElementById('jsonOutput').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 100);
+  }
+
+  function copyJSON() {
+    const json = document.getElementById('jsonBox').textContent;
+    navigator.clipboard.writeText(json).then(() => {
+      document.getElementById('copySuccess').style.display = 'block';
+      setTimeout(() => {
+        document.getElementById('copySuccess').style.display = 'none';
+      }, 3000);
+    }).catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = json; document.body.appendChild(ta);
+      ta.select(); document.execCommand('copy');
+      document.body.removeChild(ta);
+      document.getElementById('copySuccess').style.display = 'block';
+      setTimeout(() => {
+        document.getElementById('copySuccess').style.display = 'none';
+      }, 3000);
+    });
+  }
+
+  function importJSON() {
+    const txt = document.getElementById('importArea').value.trim();
+    if (!txt) { alert('Paste JSON first!'); return; }
+    try {
+      const parsed = JSON.parse(txt);
+      data = { ...DEFAULT_DATA, ...parsed };
+      saveData();
+      activeVideoCategory = 'All';
+      render();
+      alert('✅ JSON loaded successfully!');
+      closeModal('adminModal');
+    } catch(e) {
+      alert('❌ Invalid JSON: ' + e.message);
+    }
+  }
+
+  function resetAll() {
+    if (confirm('Reset all data to default?')) {
+      localStorage.removeItem('profileData');
+      data = JSON.parse(JSON.stringify(DEFAULT_DATA));
+      activeVideoCategory = 'All';
+      render();
+      closeModal('adminModal');
+    }
+  }
+
+  function parseVideoLines(text) {
+    return text.split('\n').map(line => {
+      line = line.trim();
+      if (!line) return null;
+      const parts = line.split('|').map(s => s.trim());
+      let title = '', url = '', thumb = '', category = '';
+      
+      if (parts.length === 1) {
+        url = parts[0];
+      } else if (parts.length === 2) {
+        title = parts[0];
+        url = parts[1];
+      } else if (parts.length === 3) {
+        title = parts[0];
+        url = parts[1];
+        if (parts[2] && /\.(jpg|jpeg|png|gif|webp|svg|bmp)(\?|$)/i.test(parts[2])) {
+          thumb = parts[2];
+        } else {
+          category = parts[2];
+        }
+      } else if (parts.length >= 4) {
+        title = parts[0];
+        url = parts[1];
+        thumb = parts[2];
+        category = parts[3];
+      }
+      
+      return url ? { title, url, thumb, category } : null;
+    }).filter(Boolean);
+  }
+
+  function parseMediaLines(text) {
+    return text.split('\n').map(line => {
+      line = line.trim();
+      if (!line) return null;
+      if (line.includes('|')) {
+        const idx = line.indexOf('|');
+        const title = line.substring(0, idx).trim();
+        const url = line.substring(idx+1).trim();
+        return url ? { title, url, thumb: '', category: '' } : null;
+      }
+      return { title: '', url: line, thumb: '', category: '' };
+    }).filter(Boolean);
+  }
+
+  document.addEventListener('keydown', e => {
+    if (document.getElementById('photoModal').classList.contains('active')) {
+      if (e.key === 'ArrowLeft') navGallery('photo', -1);
+      if (e.key === 'ArrowRight') navGallery('photo', 1);
+    }
+    if (document.getElementById('videoModal').classList.contains('active')) {
+      if (e.key === 'ArrowLeft') navGallery('video', -1);
+      if (e.key === 'ArrowRight') navGallery('video', 1);
+    }
+    if (document.getElementById('statusModal').classList.contains('active')) {
+      if (e.key === 'ArrowLeft') navStatus(-1);
+      if (e.key === 'ArrowRight') navStatus(1);
+    }
+  });
+
+  loadData();
+  render();
+</script>
+
+</body>
+</html>
